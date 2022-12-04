@@ -142,3 +142,106 @@ class Scene_2(MovingCameraScene):
         vector.shift(13 * DOWN)
         self.play(Write(vector))
         self.wait(5)
+ 
+
+class Scene_3(Scene):
+    def construct(self):
+        ellipse = Ellipse(
+            width=4.0, height=5.0, fill_opacity=0.5, color=BLUE, stroke_width=10
+        )
+        ellipse.shift(2.5*RIGHT)
+
+        str_1 = Text("x + y + 4z = 52")
+        str_2 = Text("x = 3y")
+
+        str_2.shift(DOWN)
+
+        eq_group = VGroup(str_1, str_2)
+        bracket = Brace(eq_group, LEFT)
+        equation_0 = VGroup(str_1, str_2, bracket)
+        equation_0.shift(2.5 * LEFT)
+        equation_0.shift(0.5 * UP)
+
+
+
+        vector0 = Matrix([["39 - 3z"], ["13 - z"], ["z"]], left_bracket="(", right_bracket=")")
+        vector0.shift(2.5*RIGHT)
+        self.add(equation_0, ellipse, vector0)
+
+
+        self.wait(5)
+
+
+        vector1 = Matrix([["39"], ["13"], ["0"]], left_bracket="(", right_bracket=")")
+        vector1.shift(2.5 * RIGHT)
+        self.play(Transform(vector0, vector1))
+
+        self.play(vector0.animate.shift(RIGHT), ellipse.animate.shift(RIGHT).scale(1.5))
+
+        vector2 = Matrix([["36"], ["12"], ["1"]], left_bracket="(", right_bracket=")")
+        vector2.shift(1.5 * RIGHT)
+        self.play(FadeIn(vector2))
+
+        vector3 = Matrix([["33"], ["11"], ["2"]], left_bracket="(", right_bracket=")")
+        vector3.shift(5.5 * RIGHT)
+        self.play(FadeIn(vector3))
+
+
+        self.wait(5)
+
+        vector4 = Matrix([["39 - 3z"], ["13 - z"], ["z"]], left_bracket="(", right_bracket=")")
+        vector4.shift(2.5 * RIGHT)
+        self.add(equation_0, ellipse, vector0)
+
+        self.play(FadeOut(vector2), FadeOut(vector3))
+        self.play(vector0.animate.shift(LEFT), ellipse.animate.shift(LEFT).scale(2/3))
+        self.play(Transform(vector0, vector4))
+
+class Scene_4(Scene):
+    def construct(self):
+
+        str_1 = Text("5x + 2y = 9")
+        str_2 = Text("2x + 2y = 6")
+
+        str_2.shift(DOWN)
+
+        eq_group_0 = VGroup(str_1, str_2)
+        eq_group_0.shift(0.5*LEFT)
+        bracket_0 = Brace(eq_group_0, LEFT)
+
+
+        str_3 = Text("x = 1")
+
+        str_4 = Text("y = 2")
+        str_4.shift(DOWN)
+        eq_group_1 = VGroup(str_3, str_4)
+        eq_group_1.next_to(eq_group_0)
+        eq_group_1.shift(RIGHT)
+        bracket_1 = Brace(eq_group_1, LEFT)
+
+        equation_0 = VGroup(str_1, str_2, bracket_0, str_3, str_4, bracket_1)
+        equation_0.shift(2 * UP)
+        equation_0.shift(LEFT)
+
+        self.play(Write(equation_0))
+
+        mtx = IntegerMatrix([[5, 2], [2, 2]],  left_bracket="(", right_bracket=")")
+        mtx.shift(2*LEFT)
+        mtx.shift(DOWN)
+        radikal = IntegerMatrix([[1], [2]], left_bracket="(", right_bracket=")")
+        radikal.next_to(mtx)
+        txt = Text(" = ")
+        txt.next_to(radikal)
+        ans = IntegerMatrix([[9], [6]], left_bracket="(", right_bracket=")")
+        ans.next_to(txt)
+
+        equation_1 = VGroup(mtx, radikal, txt, ans)
+
+        self.play(Write(equation_1))
+
+        self.wait(10)
+
+        self.play(Unwrite(equation_0))
+        self.play(Unwrite(equation_1))
+
+        self.wait(3)
