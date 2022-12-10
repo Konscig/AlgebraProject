@@ -245,3 +245,328 @@ class Scene_4(Scene):
         self.play(Unwrite(equation_1))
 
         self.wait(3)
+
+        
+        
+class Scene_5(MovingCameraScene):
+    def construct(self):
+        self.wait(1)
+        str_1 = Text("5x + 2y = 9")
+        str_2 = Text("2x + 2y = 6")
+        str_2.shift(DOWN)
+        eq_group = VGroup(str_1, str_2)
+        bracket = Brace(eq_group, LEFT)
+        equation_0 = VGroup(str_1, str_2, bracket)
+        equation_0.shift(2 * UP)
+
+        mtx0 = IntegerMatrix([[5, 2, 9], [2, 2, 6]], left_bracket="(", right_bracket=")",).shift(DOWN)
+        line = Line(start=(0, 0, 0), end=(0, -1.4, 0)).next_to(mtx0).shift(1.5 * LEFT)
+        matrix0 = VGroup(mtx0, line)
+
+        self.play(Write(equation_0), Write(matrix0, run_time=2))
+
+        self.wait(1)
+        q2 = SurroundingRectangle(mtx0.get_rows()[0])
+        q1 = SurroundingRectangle(str_1)
+        self.play(Create(q1), Create(q2))
+        self.wait(1)
+        self.play(q1.animate.move_to(str_2), q2.animate.move_to(mtx0.get_rows()[1]))
+        self.wait(1)
+        self.play(Uncreate(q1), Uncreate(q2))
+        self.wait(1)
+
+        self.play(self.camera.frame.animate.shift(DOWN))
+
+        self.play(Unwrite(equation_0, run_time=0.75))
+
+        q3 = ArrowCircleTip().next_to(mtx0.get_rows()[0])
+        q3.scale(1.4)
+        q3.shift(0.4*RIGHT)
+
+        q4 = Text("/5").move_to(q3)
+        q4.scale(0.5)
+
+
+        self.play(Create(q3), Create(q4))
+        self.wait(1)
+        mtx1 = Matrix([[1, 2/5, 9/5], [2, 2, 6]], left_bracket="(", right_bracket=")", ).shift(DOWN)
+        self.play(Transform(mtx0, mtx1))
+
+        self.play(FadeOut(q3), FadeOut(q4))
+
+
+        q3 = ArrowCircleTip(color=GREEN).next_to(mtx0.get_rows()[0])
+        q3.scale(1.4)
+        q3.shift(0.4 * RIGHT)
+
+        q4 = Text("-2").move_to(q3).scale(0.5)
+        self.play(Create(q3), Create(q4))
+
+
+        angle = ValueTracker()
+        arc = always_redraw(lambda:
+                            Arc(
+                                start_angle=PI/2,
+                                angle=angle.get_value(),
+                                stroke_width=2,
+                                radius=0.5,
+                            ).next_to(matrix0).add_tip(tip_length=0.15, tip_width=0.1).shift(0.3*RIGHT)
+                            )
+
+
+        self.add(arc)
+        self.play(angle.animate.set_value(-PI))
+        self.wait(1)
+        mtx1 = Matrix([[1, 0.4, 1.8], [0, 0.2, 0.4]], left_bracket="(", right_bracket=")", ).shift(DOWN)
+        self.play(Transform(mtx0, mtx1))
+
+
+        self.play(FadeOut(q3), FadeOut(q4), FadeOut(arc))
+
+
+        q3 = ArrowCircleTip().next_to(mtx0.get_rows()[1])
+        q3.scale(1.4)
+        q3.shift(0.4 * RIGHT)
+
+        q4 = Text("*5").move_to(q3)
+        q4.scale(0.5)
+
+        self.play(Create(q3), Create(q4))
+
+        self.wait(1)
+        mtx1 = Matrix([[1, 2 / 5, 9 / 5], [0, 1, 2]], left_bracket="(", right_bracket=")", ).shift(DOWN)
+        self.play(Transform(mtx0, mtx1))
+        self.wait(1)
+
+        self.play(FadeOut(q3), FadeOut(q4))
+
+
+        str_1 = Text("x + 0.4y = 1.8")
+        str_2 = Text("y = 2")
+        str_2.shift(DOWN)
+        eq_group = VGroup(str_1, str_2)
+        bracket = Brace(eq_group, LEFT)
+        equation_0 = VGroup(str_1, str_2, bracket)
+        equation_0.shift(2 * UP)
+
+
+        self.play(self.camera.frame.animate.shift(UP))
+        self.play(Write(equation_0))
+
+        self.wait(3)
+        self.play(Unwrite(equation_0), Unwrite(matrix0, run_time=0.5))
+
+class Scene_6(ThreeDScene):
+
+    def create_matrix(self, np_matrix):
+        basis_i_color = GREEN
+        basis_j_color = RED
+        basis_k_color = GOLD
+
+        m = Matrix(np_matrix)
+
+        m.scale(0.5)
+        m.set_column_colors(basis_i_color, basis_j_color, basis_k_color)
+
+        m.to_corner(UP + LEFT)
+
+        return m
+
+    def construct(self):
+
+        basis_i_color = GREEN
+        basis_j_color = RED
+        basis_k_color = GOLD
+
+        M = np.array([
+            [2, 2, -1],
+            [-2, 1, 2],
+            [3, 1, -0]
+        ])
+
+        axes = ThreeDAxes()
+        axes.set_color(GRAY)
+        axes.add(axes.get_axis_labels())
+
+        self.set_camera_orientation(phi=75 * DEGREES, theta=-45 * DEGREES)
+
+
+        Rang = Text("Rang = 3")
+
+        Rang.to_corner(UP + RIGHT)
+
+        self.add_fixed_in_frame_mobjects(Rang)
+
+        # matrix
+        matrix = self.create_matrix(M)
+
+        self.add_fixed_in_frame_mobjects(matrix)
+
+        # axes & camera
+        self.add(axes)
+
+        self.begin_ambient_camera_rotation(rate=0.2)
+
+        cube = Cube(side_length=1, fill_color=BLUE, stroke_width=2, fill_opacity=0.1)
+        cube.set_stroke(BLUE_E)
+
+        i_vec = Vector(np.array([1, 0, 0]), color=basis_i_color)
+        j_vec = Vector(np.array([0, 1, 0]), color=basis_j_color)
+        k_vec = Vector(np.array([0, 0, 1]), color=basis_k_color)
+
+        i_vec_new = Vector(M @ np.array([1, 0, 0]), color=basis_i_color)
+        j_vec_new = Vector(M @ np.array([0, 1, 0]), color=basis_j_color)
+        k_vec_new = Vector(M @ np.array([0, 0, 1]), color=basis_k_color)
+
+        self.play(
+            Create(cube),
+            GrowArrow(i_vec),
+            GrowArrow(j_vec),
+            GrowArrow(k_vec),
+            Write(Rang)
+        )
+
+        self.wait()
+
+        matrix_anim = ApplyMatrix(M, cube)
+
+        self.play(
+            matrix_anim,
+            Transform(i_vec, i_vec_new, rate_func=matrix_anim.get_rate_func(),
+                      run_time=matrix_anim.get_run_time()),
+            Transform(j_vec, j_vec_new, rate_func=matrix_anim.get_rate_func(),
+                      run_time=matrix_anim.get_run_time()),
+            Transform(k_vec, k_vec_new, rate_func=matrix_anim.get_rate_func(),
+                      run_time=matrix_anim.get_run_time())
+        )
+
+        self.wait()
+
+        self.wait(7)
+
+
+
+
+        Rang_new = Text("Rang = 2")
+        Rang_new.to_corner(UP + RIGHT)
+
+        M = np.array([
+            [2, 2, -1],
+            [-2, 1, 2],
+            [-1, 0.5, 1]
+        ])
+
+        self.remove(matrix)
+        matrix = self.create_matrix(M)
+        self.add_fixed_in_frame_mobjects(matrix)
+
+
+        matrix_anim = ApplyMatrix(M, cube)
+
+        i_vec_new = Vector(M @ np.array([1, 0, 0]), color=basis_i_color)
+        j_vec_new = Vector(M @ np.array([0, 1, 0]), color=basis_j_color)
+        k_vec_new = Vector(M @ np.array([0, 0, 1]), color=basis_k_color)
+
+        self.play(
+            matrix_anim,
+            Transform(i_vec, i_vec_new, rate_func=matrix_anim.get_rate_func(),
+                      run_time=matrix_anim.get_run_time()),
+            Transform(j_vec, j_vec_new, rate_func=matrix_anim.get_rate_func(),
+                      run_time=matrix_anim.get_run_time()),
+            Transform(k_vec, k_vec_new, rate_func=matrix_anim.get_rate_func(),
+                      run_time=matrix_anim.get_run_time()),
+            Transform(Rang, Rang_new)
+        )
+
+        self.wait()
+
+        self.wait(7)
+
+
+
+
+        Rang_new = Text("Rang = 1")
+        Rang_new.to_corner(UP + RIGHT)
+
+        M = np.array([
+            [1, -0.5, -1],
+            [-2, 1, 2],
+            [-1, 0.5, 1]
+        ])
+
+        self.remove(matrix)
+        matrix = self.create_matrix(M)
+        self.add_fixed_in_frame_mobjects(matrix)
+
+        matrix_anim = ApplyMatrix(M, cube)
+
+        i_vec_new = Vector(M @ np.array([1, 0, 0]), color=basis_i_color)
+        j_vec_new = Vector(M @ np.array([0, 1, 0]), color=basis_j_color)
+        k_vec_new = Vector(M @ np.array([0, 0, 1]), color=basis_k_color)
+
+        self.play(
+            matrix_anim,
+            Transform(i_vec, i_vec_new, rate_func=matrix_anim.get_rate_func(),
+                      run_time=matrix_anim.get_run_time()),
+            Transform(j_vec, j_vec_new, rate_func=matrix_anim.get_rate_func(),
+                      run_time=matrix_anim.get_run_time()),
+            Transform(k_vec, k_vec_new, rate_func=matrix_anim.get_rate_func(),
+                      run_time=matrix_anim.get_run_time()),
+            Transform(Rang, Rang_new)
+        )
+
+        self.wait()
+
+        self.wait(7)
+
+    
+class Scene_7(Scene):
+    def construct(self):
+        self.wait(1)
+        mtx0 = IntegerMatrix([[5, 2, 9], [2, 2, 6], [4, 5, 6]], left_bracket="(", right_bracket=")", ).shift(UP)
+        self.play(Write(mtx0))
+        line0 = Line(start=(0, 0, 0), end=(0, 2, 0))
+        line1 = Line(start=(-1.5, 0.2, 0), end=(1.5, 0.2, 0))
+
+        self.play(Create(line0), Create(line1))
+
+        txt0 = Text("M32 = ").shift(DOWN + 2*LEFT)
+        mtx1 = IntegerMatrix([[5, 9], [4, 6]], left_bracket="|", right_bracket="|", ).next_to(txt0)
+        txt1 = Text(" = -6").next_to(mtx1)
+
+        self.play(Write(txt0))
+        self.play(Write(mtx1))
+        self.play(Write(txt1))
+
+        self.wait(3)
+
+        self.play(FadeOut(txt0), FadeOut(mtx1), FadeOut(txt1))
+
+        self.play(line0.animate.shift(1.3*RIGHT), line1.animate.shift(1.55*UP))
+        self.wait(1)
+
+        txt0 = Text("M13 = ").shift(DOWN + 2 * LEFT)
+        mtx1 = IntegerMatrix([[2, 2], [4, 5]], left_bracket="|", right_bracket="|", ).next_to(txt0)
+        txt1 = Text(" = 2").next_to(mtx1)
+
+        self.play(Write(txt0))
+        self.play(Write(mtx1))
+        self.play(Write(txt1))
+        self.wait(3)
+
+        self.play(FadeOut(txt0), FadeOut(mtx1), FadeOut(txt1))
+
+        self.play(line0.animate.shift(2.6 * LEFT), line1.animate.shift(1.55 * DOWN))
+        self.wait(1)
+
+        txt0 = Text("M31 = ").shift(DOWN + 2 * LEFT)
+        mtx1 = IntegerMatrix([[2, 9], [4, 6]], left_bracket="|", right_bracket="|", ).next_to(txt0)
+        txt1 = Text(" = -6").next_to(mtx1)
+
+        self.play(Write(txt0))
+        self.play(Write(mtx1))
+        self.play(Write(txt1))
+        self.wait(3)
+
+        self.play(FadeOut(txt0), FadeOut(mtx1), FadeOut(txt1), Unwrite(mtx0), Uncreate(line0), Uncreate(line1))
+
